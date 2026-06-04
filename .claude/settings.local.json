@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Skill(codex:setup)",
+      "Bash(curl -s -o /dev/null -w \"dev server: %{http_code}\" http://localhost:5173/)",
+      "Skill(codex:rescue)",
+      "Bash(npm test *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173)",
+      "Bash(node --input-type=module --eval ' *)",
+      "Bash(npx vite *)",
+      "Bash(node -e \"const r = require\\('/Users/doxie/0xpat-portfolio/node_modules/recharts/package.json'\\); console.log\\(r.version\\)\")",
+      "Bash(curl -s http://localhost:5175/)",
+      "Bash(node *)",
+      "Bash(npx playwright *)",
+      "Bash(claude mcp *)",
+      "Bash(npx -y react-bits-mcp --help)",
+      "Bash(npm search *)",
+      "mcp__react-bits__get_component",
+      "mcp__react-bits__list_components",
+      "mcp__react-bits__get_component_demo",
+      "mcp__react-bits__get_component_metadata",
+      "mcp__react-bits__search_components",
+      "Bash(grep -E '^motion$')"
+    ]
+  }
+}
