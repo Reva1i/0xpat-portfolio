@@ -2,7 +2,7 @@
   "name": "0xpat-portfolio",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://doxie.xyz",
+  "homepage": "https://0xpat.com",
   "type": "module",
   "scripts": {
     "dev": "vite",
