@@ -32,25 +32,78 @@ const FALLBACK_COLORS = [
   '#7c3aed', '#0891b2', '#9333ea', '#16a34a', '#ea580c',
 ]
 
+const FEE_MAP = { Stablecoin: '0.05%', Altcoin: '0.25%', RWA: '0.30%' }
+
+const ALL_DEALS = DEAL_GROUPS.flatMap(g => g.deals)
+const MAX_TVL_NUM = Math.max(...ALL_DEALS.map(d => parseTvlNum(d.tvl)))
+
+function parseTvlNum(str) {
+  if (str.includes('M')) return parseFloat(str.replace(/[$M]/g, '')) * 1_000_000
+  if (str.includes('K')) return parseFloat(str.replace(/[$K]/g, '')) * 1_000
+  return parseFloat(str.replace(/[$]/g, ''))
+}
+
 function ProtocolLogo({ name }) {
   const file = LOGO_MAP[name]
+  const fallbackColor = FALLBACK_COLORS[name.charCodeAt(0) % FALLBACK_COLORS.length]
+  const size = { width: '24px', height: '24px', borderRadius: '50%', flexShrink: 0 }
+
   if (file) {
     return (
-      <img
-        src={`/logos/${file}`}
-        alt={name}
-        className="w-6 h-6 rounded-full object-cover flex-shrink-0"
-        style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-      />
+      <span style={{ position: 'relative', display: 'inline-flex', ...size }}>
+        <img
+          src={`/logos/${file}`}
+          alt={name}
+          style={{ ...size, objectFit: 'cover', border: '1px solid rgba(255,255,255,0.08)' }}
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+            e.currentTarget.nextSibling.style.display = 'flex'
+          }}
+        />
+        <span
+          style={{
+            ...size, background: fallbackColor, display: 'none',
+            alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontWeight: 700, fontSize: '10px',
+            fontFamily: 'JetBrains Mono, monospace',
+          }}
+        >
+          {name[0].toUpperCase()}
+        </span>
+      </span>
     )
   }
-  const color = FALLBACK_COLORS[name.charCodeAt(0) % FALLBACK_COLORS.length]
+
   return (
     <span
-      className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold"
-      style={{ background: color, fontSize: '11px', border: '1px solid rgba(255,255,255,0.08)' }}
+      style={{
+        ...size, background: fallbackColor, display: 'inline-flex',
+        alignItems: 'center', justifyContent: 'center',
+        color: '#fff', fontWeight: 700, fontSize: '10px',
+        fontFamily: 'JetBrains Mono, monospace',
+      }}
     >
       {name[0].toUpperCase()}
+    </span>
+  )
+}
+
+function FeePill({ type }) {
+  const fee = FEE_MAP[type] || '0.25%'
+  return (
+    <span
+      style={{
+        background: '#1a1a1a',
+        border: '1px solid rgba(255,255,255,0.08)',
+        borderRadius: '9999px',
+        padding: '2px 8px',
+        fontSize: '10px',
+        fontFamily: 'JetBrains Mono, monospace',
+        color: '#888888',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {fee}
     </span>
   )
 }
@@ -90,26 +143,61 @@ function ChevronIcon() {
   )
 }
 
+function TvlCell({ tvl }) {
+  return (
+    <span className="font-mono text-sm text-white">{tvl}</span>
+  )
+}
+
 function DealRow({ deal, isLast, i, inView }) {
+  const [hovered, setHovered] = useState(false)
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
       animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.3, delay: 0.05 + i * 0.03, ease: 'easeOut' }}
-      className="grid grid-cols-3 px-4 py-3 items-center text-sm hover:bg-elevated transition-colors cursor-default"
-      style={{ borderBottom: !isLast ? '1px solid rgba(255,255,255,0.04)' : 'none' }}
+      className="group relative grid items-center text-sm cursor-default"
+      style={{
+        gridTemplateColumns: '1fr auto 1fr 1fr',
+        padding: '8px 16px',
+        borderBottom: !isLast ? '1px solid rgba(255,255,255,0.04)' : 'none',
+        background: hovered ? 'rgba(255,255,255,0.025)' : 'transparent',
+        transition: 'background 0.15s ease',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
+      {/* Gradient left border on hover */}
+      <div
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: '2px',
+          background: 'linear-gradient(to bottom, #7c3aed, #40D6E1)',
+          opacity: hovered ? 1 : 0,
+          transition: 'opacity 0.15s ease',
+        }}
+      />
+
+      {/* Protocol + single logo */}
       <span className="font-medium text-white flex items-center gap-2">
         <ProtocolLogo name={deal.protocol} />
         {deal.protocol}
       </span>
-      <span><ChainBadge chain={deal.chain} /></span>
-      <span className="font-mono text-sm text-white flex items-center gap-2">
-        {deal.tvl}
-        {deal.coordinated && (
-          <span className="text-xs text-text-muted font-sans font-normal">coordinated</span>
-        )}
+
+      {/* Fee */}
+      <span style={{ paddingLeft: '12px', paddingRight: '12px' }}>
+        <FeePill type={deal.type} />
       </span>
+
+      {/* Chain */}
+      <span><ChainBadge chain={deal.chain} /></span>
+
+      {/* TVL */}
+      <TvlCell tvl={deal.tvl} />
     </motion.div>
   )
 }
@@ -151,7 +239,7 @@ function DealGroup({ group, groupIndex, inView }) {
           >
             {group.deals.map((deal, i) => (
               <DealRow
-                key={deal.protocol}
+                key={deal.protocol + i}
                 deal={deal}
                 i={i}
                 isLast={i === group.deals.length - 1}
@@ -177,7 +265,7 @@ export default function Liquidity() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-2xl font-bold" style={{ display: 'inline-block' }}>
             <GradientText colors={['#ffffff', '#a78bfa', '#ffffff']} animationSpeed={8} yoyo={true}>Liquidity</GradientText>
           </h2>
           <span
@@ -188,30 +276,51 @@ export default function Liquidity() {
           </span>
         </div>
 
-        <p className="text-sm text-text-secondary mt-4 mb-8 leading-relaxed">
+        {/* Section meta strip */}
+        <p className="font-mono text-xs mt-1 mb-4" style={{ color: '#444444' }}>
+          11 protocols · $10M+ TVL · Base / BNBChain
+        </p>
+
+        <p className="mb-4 leading-relaxed" style={{ fontSize: '13px', color: '#888888' }}>
           Protocol liquidity deals closed across Base, BNBChain, and Monad. Each position represents a structured incentive deal — reward tiers, duration, co-incentive terms, and TVL targets.
         </p>
 
         <BorderGlow backgroundColor="#111111" colors={['#7c3aed', '#40D6E1', '#6d28d9']} glowColor="270 70 60" borderRadius={12}>
-          <div className="overflow-x-auto" style={{ borderRadius: '12px', overflow: 'hidden' }}>
-            <div style={{ minWidth: '400px' }}>
-              <div
-                className="grid grid-cols-3 px-4 py-2.5 text-xs font-medium text-text-muted uppercase tracking-wider"
-                style={{ background: '#111111', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                <span>Protocol</span>
-                <span>Chain</span>
-                <span className="font-mono">TVL</span>
-              </div>
+          <div style={{ borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <div style={{ minWidth: '600px' }}>
+                {/* Table header — 5 cols */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr auto 1fr 1fr',
+                    padding: '10px 16px',
+                    background: '#111111',
+                    borderBottom: '1px solid rgba(255,255,255,0.06)',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    fontFamily: 'JetBrains Mono, monospace',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    color: '#555555',
+                    gap: '12px',
+                  }}
+                >
+                  <span>Protocol</span>
+                  <span style={{ paddingLeft: '12px', paddingRight: '12px' }}>Fee <span style={{ color: '#333333' }}>↑↓</span></span>
+                  <span>Chain <span style={{ color: '#333333' }}>↑↓</span></span>
+                  <span>TVL <span style={{ color: '#333333' }}>↑↓</span></span>
+                </div>
 
-              {DEAL_GROUPS.map((group, groupIndex) => (
-                <DealGroup
-                  key={group.year}
-                  group={group}
-                  groupIndex={groupIndex}
-                  inView={inView}
-                />
-              ))}
+                {DEAL_GROUPS.map((group, groupIndex) => (
+                  <DealGroup
+                    key={group.year}
+                    group={group}
+                    groupIndex={groupIndex}
+                    inView={inView}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </BorderGlow>

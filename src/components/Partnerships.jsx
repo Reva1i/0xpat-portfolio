@@ -1,6 +1,5 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import BorderGlow from './BorderGlow'
 import GradientText from './GradientText'
 
 const PARTNER_CARDS = [
@@ -86,6 +85,75 @@ function CardAvatar({ avatar }) {
   )
 }
 
+function GradientCard({ card, index, inView }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <motion.div
+      className="flex flex-col"
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: 0.1 + index * 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* Gradient border wrapper */}
+      <div
+        style={{
+          padding: '1px',
+          borderRadius: '13px',
+          background: hovered
+            ? 'linear-gradient(135deg, #7c3aed, #40D6E1)'
+            : 'linear-gradient(135deg, rgba(124,58,237,0.45), rgba(64,214,225,0.45))',
+          flex: 1,
+          display: 'flex',
+          transition: 'background 0.3s ease, box-shadow 0.3s ease',
+          boxShadow: hovered
+            ? '0 0 24px rgba(124,58,237,0.35), 0 0 48px rgba(64,214,225,0.15)'
+            : '0 0 0px rgba(124,58,237,0)',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        <div
+          style={{
+            background: '#111111',
+            borderRadius: '12px',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <div className="p-6 flex flex-col" style={{ minHeight: '280px', flex: 1 }}>
+            <div
+              className="font-mono font-bold mb-1"
+              style={{ fontSize: '2rem', lineHeight: 1.1, color: '#7c3aed', letterSpacing: '-0.02em' }}
+            >
+              {card.metric}
+            </div>
+            <div className="text-xs text-text-muted mb-5 leading-relaxed">
+              {card.metricSub}
+            </div>
+
+            <div className="flex items-center gap-2.5 mb-3">
+              <CardAvatar avatar={card.avatar} />
+              <div>
+                <div className="font-semibold text-white text-sm leading-tight">{card.title}</div>
+                <div className="text-xs text-text-muted mt-0.5">{card.subtitle}</div>
+              </div>
+            </div>
+
+            <p
+              className="text-xs text-text-secondary leading-relaxed mt-auto pt-3"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+            >
+              {card.details}
+            </p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function Partnerships() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
@@ -98,7 +166,7 @@ export default function Partnerships() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <div className="flex items-center gap-3 mb-8">
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-2xl font-bold" style={{ display: 'inline-block' }}>
             <GradientText colors={['#ffffff', '#a78bfa', '#ffffff']} animationSpeed={8} yoyo={true}>Partnerships</GradientText>
           </h2>
           <span
@@ -111,49 +179,7 @@ export default function Partnerships() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
           {PARTNER_CARDS.map((card, i) => (
-            <motion.div
-              key={card.title}
-              className="flex flex-col"
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.1 + i * 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <BorderGlow
-                backgroundColor="#111111"
-                colors={['#7c3aed', '#40D6E1', '#6d28d9']}
-                glowColor="270 70 60"
-                borderRadius={12}
-                glowIntensity={0.8}
-                className="flex-1"
-              >
-                <div className="p-6 flex flex-col" style={{ minHeight: '280px' }}>
-                  <div
-                    className="font-mono font-bold mb-1"
-                    style={{ fontSize: '2rem', lineHeight: 1.1, color: '#7c3aed', letterSpacing: '-0.02em' }}
-                  >
-                    {card.metric}
-                  </div>
-                  <div className="text-xs text-text-muted mb-5 leading-relaxed">
-                    {card.metricSub}
-                  </div>
-
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <CardAvatar avatar={card.avatar} />
-                    <div>
-                      <div className="font-semibold text-white text-sm leading-tight">{card.title}</div>
-                      <div className="text-xs text-text-muted mt-0.5">{card.subtitle}</div>
-                    </div>
-                  </div>
-
-                  <p
-                    className="text-xs text-text-secondary leading-relaxed mt-auto pt-3"
-                    style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
-                  >
-                    {card.details}
-                  </p>
-                </div>
-              </BorderGlow>
-            </motion.div>
+            <GradientCard key={card.title} card={card} index={i} inView={inView} />
           ))}
         </div>
       </motion.div>

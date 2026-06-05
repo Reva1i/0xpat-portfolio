@@ -23,8 +23,9 @@ export default function Nav() {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 h-14"
+      className="fixed left-0 right-0 z-50 flex items-center justify-between px-6 h-14"
       style={{
+        top: '28px',
         background: 'rgba(10,10,10,0.85)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',

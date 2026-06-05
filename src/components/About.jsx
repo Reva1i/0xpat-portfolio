@@ -47,11 +47,16 @@ export default function About() {
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="max-w-2xl"
       >
-        <div className="flex items-center gap-3 mb-6">
-          <h2 className="text-2xl font-bold">
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="text-2xl font-bold" style={{ display: 'inline-block' }}>
             <GradientText colors={['#ffffff', '#a78bfa', '#ffffff']} animationSpeed={8} yoyo={true}>About</GradientText>
           </h2>
         </div>
+
+        {/* Section meta strip */}
+        <p className="font-mono text-xs mb-4" style={{ color: '#444444' }}>
+          Pat Kuo · Taipei · PancakeSwap BD
+        </p>
 
         <div className="flex items-center gap-2 mb-6 overflow-hidden">
           <span className="text-sm text-text-muted font-mono flex-shrink-0">I am a</span>
@@ -69,7 +74,7 @@ export default function About() {
           />
         </div>
 
-        <div className="space-y-4 text-sm text-text-secondary leading-relaxed mb-8">
+        <div className="space-y-4 leading-relaxed mb-8" style={{ fontSize: '13px', color: '#888888' }}>
           <p>Rational degen who believes in data. Longtermist.</p>
           <p>Five years building in DeFi, focusing on ecosystem BD across Base, BNBChain, and Monad. Liquidity deals, incentive design, foundation partnerships. I work best where strategy meets execution.</p>
           <p>Currently at PancakeSwap. Devoted to democratizing the financial system.</p>

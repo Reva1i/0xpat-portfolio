@@ -303,8 +303,8 @@ export default function Launchpad() {
         animate={inView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        <div className="flex items-center gap-3 mb-4">
-          <h2 className="text-2xl font-bold">
+        <div className="flex items-center gap-3 mb-1">
+          <h2 className="text-2xl font-bold" style={{ display: 'inline-block' }}>
             <GradientText colors={['#ffffff', '#a78bfa', '#ffffff']} animationSpeed={8} yoyo={true}>Launchpad</GradientText>
           </h2>
           <span className="text-xs px-2 py-0.5 rounded font-mono" style={{ background: 'rgba(255,255,255,0.06)', color: '#888888' }}>
@@ -312,9 +312,15 @@ export default function Launchpad() {
           </span>
         </div>
 
-        <p className="text-sm text-text-secondary mb-8 leading-relaxed max-w-2xl">
-          30+ token launches on Binance Wallet IDO with zero delays or errors. Each launch required end-to-end coordination — pool setup, liquidity injection (~$1M per IDO), and post-launch monitoring.
+        {/* Section meta strip */}
+        <p className="font-mono text-xs mb-4" style={{ color: '#444444' }}>
+          30+ launches · $1.2M revenue · 0 errors · BNBChain / Base
         </p>
+
+        <p className="mb-4 leading-relaxed max-w-2xl" style={{ fontSize: '13px', color: '#888888' }}>
+          30+ token launches on Binance Wallet IDO with zero delays or errors. Each launch required end-to-end coordination including pool setup, liquidity injection (~$1M per IDO), and post-launch monitoring.
+        </p>
+
 
         <LogoStrip />
 
@@ -405,20 +411,27 @@ export default function Launchpad() {
             initial={{ opacity: 0, y: 10 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.42, duration: 0.35 }}
-            style={{ overflow: 'hidden', borderRadius: '12px' }}
           >
-            <BorderGlow backgroundColor="rgba(34,197,94,0.04)" colors={['#22c55e', '#40D6E1', '#22c55e']} glowColor="142 70 60" glowIntensity={0.4} borderRadius={12} className="flex-1">
-              <div className="p-4 flex flex-1 items-center justify-center">
+            <BorderGlow
+              backgroundColor="#111111"
+              colors={['#22c55e', '#0d1f14', '#22c55e']}
+              glowColor="142 40 25"
+              glowIntensity={0.025}
+              borderRadius={12}
+              className="flex-1"
+            >
+              <div className="p-4">
                 <span
                   className="font-mono text-sm flex items-center gap-2 whitespace-nowrap"
                   style={{ color: '#22c55e' }}
                 >
                   <span
                     className="inline-block w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }}
+                    style={{ background: '#22c55e', boxShadow: '0 0 3px rgba(34,197,94,0.3)' }}
                   />
                   ✓ Zero Errors
                 </span>
+                <div className="font-mono text-xs mt-1" style={{ color: '#444444' }}>0 delays · 0 errors</div>
               </div>
             </BorderGlow>
           </motion.div>

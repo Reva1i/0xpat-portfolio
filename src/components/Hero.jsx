@@ -22,7 +22,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-4" style={{ paddingTop: '56px' }}>
+    <section className="relative min-h-screen flex flex-col items-center justify-center px-4" style={{ paddingTop: '84px' }}>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
